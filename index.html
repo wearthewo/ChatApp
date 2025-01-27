@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatApp</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="bg-blue-400" >
+    <div class="container max-w-[400px] my-50 mx-auto p-20 bg-gray-600 rounded-[10px] ">
+      <h1 class="text-center mb-20 text-[24px] font-bold">ChatApp</h1>
+      <form class="flex flex-col items-center" id="form">
+        <input 
+          class="border border-solid border-black rounded-[5px] p-[10px] mb-[10px] w-full"
+          type="text"
+          id="name"
+          placeholder="Enter your name"
+        />
+        <input
+          class=" border border-solid border-black rounded-[5px] p-[10px] mb-[10px] w-full"
+          type="text"
+          id="message"
+          placeholder="Enter your message"
+        />
+        <button class="bg-gray-900 text-red-900 border-none rounded-[5px] p-[10px] w-full hover:text-green-900 ">Send Message</button>
+      </form> 
+      <div class="mt-[20px] border border-black border-solid rounded-[5px] p-[10px] h-[200px] overflow-y-auto" id="textArea"></div> 
+      <script src="/socket.io/socket.io.js"></script> 
+      <script>
+        let socket = io() 
+
+        let form = document.getElementById("form")
+        let name = document.getElementById("name")
+        let message = document.getElementById("message")
+        let textArea = document.getElementById("textArea") 
+        form.addEventListener('submit',(e)=>{
+            e.preventDefault() 
+
+            if (name.value && message.value){
+                socket.emit('send name', name.value)
+                socket.emit('send message', message.value)
+                message.value=''
+                //name.value=''
+            }
+        }) 
+        socket.on('send name', (username)=>{
+            let usname = document.createElement('p')  
+            usname.innerHTML = `<span class="border-none mb-[5px] font-bold">${name.value}:</span>`;        
+            textArea.appendChild(usname)
+        }) 
+        socket.on('send message', (chat) => {
+            let chatContent = document.createElement('p');
+            chatContent.classList.add('message');
+            chatContent.textContent = chat;
+            //chatContent.innerHTML = `<span class="mb-[5px]"</span>`
+            textArea.appendChild(chatContent);
+        });
+      </script>
+    </div>
+    </div>
+  </body>
+</html>
